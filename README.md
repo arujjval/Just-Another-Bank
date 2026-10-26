@@ -1,9 +1,5 @@
 # Just Another Bank: High-Concurrency Banking Management System
 
-> **CS-513: System Software – Mini Project**  
-> **International Institute of Information Technology, Bangalore (IIIT-B)**  
-> **System Name:** **Just Another Bank** *(Derived from the classical shield of protection—symbolizing security, synchronization, and data integrity)*
-
 ---
 
 ## 📌 Executive Summary
@@ -16,19 +12,19 @@ The central focus of Just Another Bank is **robust system programming**: ensurin
 
 ## 🏛️ System Architecture & Class Blueprint
 
-AegisBank is designed around a 6-tier architecture that isolates client sessions, ensures concurrency safety, and enforces strict ACID transaction guarantees across all banking operations.
+Just Another Bank is designed around a 6-tier architecture that isolates client sessions, ensures concurrency safety, and enforces strict ACID transaction guarantees across all banking operations.
 
 ### 1. High-Level System Architecture
 Below is the complete single-image architectural visualization depicting all 6 tiers—from presentation, socket networking, daemon process management, synchronization, and functional controllers down to direct POSIX disk persistence:
 
-![AegisBank System Software Architecture](./architecture_diagram.png)
+![System Software Architecture](./architecture_diagram.png)
 
 ---
 
 ### 2. UML Class Diagram & Entity Relationships
 Below is the class diagram showing the object-oriented structure, method signatures, attributes, and associations implemented across the subsystems:
 
-![AegisBank Blueprint & UML Class Diagram](./class_diagram.png)
+![Blueprint & UML Class Diagram](./class_diagram.png)
 
 ### Architectural Entity Breakdown
 * **`Bank` (Daemon / Server)**: Manages socket binding, connection acceptance, worker process spawning (`fork()`), signal trapping, and global request dispatching.
@@ -42,7 +38,7 @@ Below is the class diagram showing the object-oriented structure, method signatu
 
 ## ⚙️ Core System Programming & C Concepts Implemented
 
-AegisBank intentionally replaces high-level library abstractions with direct **UNIX / POSIX system calls** to demonstrate fundamental operating system and systems programming concepts:
+Just Another Bank intentionally replaces high-level library abstractions with direct **UNIX / POSIX system calls** to demonstrate fundamental operating system and systems programming concepts:
 
 ### 1. Multi-Process Concurrency & Worker Lifecycle (`fork`)
 * **Concurrent Server Architecture**: When a client connects via `accept()`, the parent server daemon immediately spawns a dedicated worker process using `fork()`.
@@ -73,7 +69,7 @@ AegisBank intentionally replaces high-level library abstractions with direct **U
 * **Crash-Resilient Signal Trapping**: Signal handlers for `SIGINT`, `SIGTERM`, `SIGSEGV`, `SIGHUP`, and `SIGQUIT` ensure active semaphores are unlinked if the process is terminated prematurely, preventing permanent lockouts.
 
 ### 5. Advisory Record-Level File Locking (`fcntl`)
-* **Granular Byte-Range Locking**: Rather than locking an entire database file (which would serialize the entire bank), AegisBank uses `fcntl()` with `struct flock` to lock **individual struct records** at exact byte offsets computed via `lseek()`.
+* **Granular Byte-Range Locking**: Rather than locking an entire database file (which would serialize the entire bank), Just Another Bank uses `fcntl()` with `struct flock` to lock **individual struct records** at exact byte offsets computed via `lseek()`.
 * **Lock Types**:
   * `F_WRLCK` (Exclusive Write Lock): Applied during deposits, withdrawals, transfers, loan evaluations, and role updates. Blocks concurrent readers and writers on that specific record.
   * `F_RDLCK` (Shared Read Lock): Allows concurrent inspection while preventing simultaneous writes.
@@ -88,7 +84,7 @@ AegisBank intentionally replaces high-level library abstractions with direct **U
 
 ### 7. Deadlock Prevention (Hierarchical Lock Acquisition)
 * **The Problem**: If Customer A transfers funds to Customer B while Customer B concurrently transfers funds to Customer A, a standard locking strategy causes a circular wait deadlock: Process 1 locks A and waits for B, while Process 2 locks B and waits for A.
-* **The Solution**: AegisBank strictly eliminates Coffman's circular wait condition by enforcing **canonical lock ordering**:
+* **The Solution**: Just Another Bank strictly eliminates Coffman's circular wait condition by enforcing **canonical lock ordering**:
   $$\text{First Locked} = \min(\text{srcOffset}, \text{dstOffset})$$
   $$\text{Second Locked} = \max(\text{srcOffset}, \text{dstOffset})$$
   Both processes request the records in the exact same sequential order, making deadlocks mathematically impossible.
@@ -195,10 +191,10 @@ Open one or more terminal windows and connect to the server:
 | Role | Identifier / Username | Default Password | Menu Option |
 | :--- | :---: | :---: | :---: |
 | **Administrator** | Root Admin | **`admin@123`** | Option `4` |
-| **Manager** | Manager ID **`100`** or **`500`** | **`password`** | Option `3` |
+| **Manager** | Manager ID **`104`** or **`500`** | **`password`** | Option `3` |
 | **Employee** | Staff ID **`501`** or **`503`** | **`password`** | Option `2` |
 | **Customer** | Account **`101`** (Vikas) | **`password`** | Option `1` |
-| **Customer** | Account **`103`** (Mohit) | **`password`** | Option `1` |
+| **Customer** | Account **`102`** (Mohit) | **`password`** | Option `1` |
 | **Customer** | Account **`1003`** (Lakshman) | **`1003`** | Option `1` |
 
 ---
@@ -224,9 +220,3 @@ For evaluations and lab demonstrations, perform the following verification tests
    * Customer `101` applies for a loan $\rightarrow$ Manager `100` assigns it to Employee `501` $\rightarrow$ Employee `501` approves it $\rightarrow$ Customer `101` balance automatically credited with principal.
 
 ---
-
-## 👥 Authors & Academic Context
-
-* **Project**: Design and Development of Banking Management System
-* **Course**: CS-513 System Software (Mini Project)
-* **Institution**: International Institute of Information Technology, Bangalore (IIIT-B)
